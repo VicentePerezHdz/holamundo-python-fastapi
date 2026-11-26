@@ -4,6 +4,8 @@
 
 La misma API del proyecto .NET, hecha en Python con FastAPI y Pydantic, más una página HTML que la consume. Tiene tres funciones: saludo con input de texto, calculadora y combobox con mensaje.
 
+![Captura de la aplicación](docs/img/captura.png)
+
 ## Qué demuestra
 - Routers, servicios detrás de interfaces e inyección de dependencias con `Depends`.
 - Validación con Pydantic.
