@@ -1,5 +1,7 @@
 # Hola Mundo · Python + FastAPI
 
+[![CI](https://github.com/VicentePerezHdz/holamundo-python-fastapi/actions/workflows/ci.yml/badge.svg)](https://github.com/VicentePerezHdz/holamundo-python-fastapi/actions/workflows/ci.yml) [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
+
 La misma API del proyecto .NET, hecha en Python con FastAPI y Pydantic, más una página HTML que la consume. Tiene tres funciones: saludo con input de texto, calculadora y combobox con mensaje.
 
 ## Qué demuestra
@@ -16,3 +18,7 @@ python -m pytest -v                                   # 14 pruebas
 ```
 
 La explicación completa está en [`docs/Documento_Transicion.md`](docs/Documento_Transicion.md).
+
+## Licencia
+
+[MIT](LICENSE)
