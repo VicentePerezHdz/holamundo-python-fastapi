@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hola Mundo FastAPI</title>
+  <style>
+    body { font-family: system-ui, 'Segoe UI', sans-serif; background: #f4f5f7; margin: 0; padding: 1rem; color: #1c1c1c; }
+    main { max-width: 640px; margin: 0 auto; display: grid; gap: 1rem; }
+    section { background: #fff; border: 1px solid #dcdfe4; border-radius: 8px; padding: 1rem; }
+    h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; color: #2b6a3e; margin-top: 0; }
+    form { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+    input, select, button { font: inherit; padding: .4rem .6rem; border-radius: 6px; border: 1px solid #b8bdc6; }
+    input[type=number] { width: 6rem; }
+    button { background: #2b6a3e; color: #fff; border-color: #2b6a3e; cursor: pointer; }
+    .ok { color: #11663a; font-weight: 600; } .err { color: #b00020; font-weight: 600; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Hola Mundo FastAPI <small>(<a href="/docs">Swagger</a>)</small></h1>
+
+  <section>
+    <h2>1. Saludo</h2>
+    <form id="fSaludo">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" autocomplete="off" placeholder="Escribe tu nombre">
+      <button>Saludar</button>
+    </form>
+    <p id="rSaludo" role="status"></p>
+  </section>
+
+  <section>
+    <h2>2. Calculadora</h2>
+    <form id="fCalc">
+      <input id="a" type="number" value="10" aria-label="Número A">
+      <select id="op" aria-label="Operación">
+        <option value="suma">+</option><option value="resta">−</option>
+        <option value="multiplicacion">×</option><option value="division">÷</option>
+      </select>
+      <input id="b" type="number" value="5" aria-label="Número B">
+      <button>Calcular</button>
+    </form>
+    <p id="rCalc" role="status"></p>
+  </section>
+
+  <section>
+    <h2>3. Combobox con mensaje</h2>
+    <label for="lenguaje">Lenguaje</label>
+    <select id="lenguaje"><option value="">— Elige una opción —</option></select>
+    <p id="rCombo" role="status"></p>
+  </section>
+</main>
+
+<script>
+  // JavaScript sin frameworks: la página se sirve desde la misma API, así que no necesita CORS.
+  const $ = (id) => document.getElementById(id);
+
+  async function pedir(ruta, cuerpo) {
+    const resp = await fetch('/api' + ruta, cuerpo === undefined ? {} : {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo),
+    });
+    const datos = await resp.json();
+    if (!resp.ok) {
+      const val = datos.errors ? Object.values(datos.errors).flat().join(' ') : '';
+      throw new Error(val || datos.detail || datos.title);
+    }
+    return datos;
+  }
+
+  function pintar(el, texto, ok) { el.textContent = texto; el.className = ok ? 'ok' : 'err'; }
+
+  $('fSaludo').onsubmit = async (e) => {
+    e.preventDefault();
+    try { pintar($('rSaludo'), (await pedir('/saludo', { nombre: $('nombre').value })).mensaje, true); }
+    catch (err) { pintar($('rSaludo'), err.message, false); }
+  };
+
+  $('fCalc').onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const r = await pedir('/calculadora', { a: $('a').value, b: $('b').value, operacion: $('op').value });
+      pintar($('rCalc'), r.expresion, true);
+    } catch (err) { pintar($('rCalc'), err.message, false); }
+  };
+
+  let opciones = [];
+  pedir('/catalogos/lenguajes').then((lista) => {
+    opciones = lista;
+    for (const o of lista) $('lenguaje').add(new Option(o.texto, o.clave));
+  });
+  $('lenguaje').onchange = (e) => {
+    const o = opciones.find((x) => x.clave === e.target.value);
+    pintar($('rCombo'), o ? o.mensaje : '', true);
+  };
+</script>
+</body>
+</html>
